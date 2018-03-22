@@ -43,6 +43,9 @@ void BetaFPV::init_board()
   board_init();
 
   led_.init(GPIOB, GPIO_Pin_8);
+
+  spi1_.init(SPI1);
+  cs_.init(GPIOB, GPIO_Pin_9, GPIO::OUTPUT);
 }
 
 void BetaFPV::board_reset(bool bootloader)
@@ -53,71 +56,21 @@ void BetaFPV::board_reset(bool bootloader)
 }
 
 // clock
-uint32_t BetaFPV::clock_millis()
-{
-  return millis();
-}
-
-uint64_t BetaFPV::clock_micros()
-{
-  return micros();
-}
-
-void BetaFPV::clock_delay(uint32_t milliseconds)
-{
-  delay(milliseconds);
-}
+uint32_t BetaFPV::clock_millis() { return millis(); }
+uint64_t BetaFPV::clock_micros() { return micros(); }
+void BetaFPV::clock_delay(uint32_t milliseconds) { delay(milliseconds); }
 
 // serial
-void BetaFPV::serial_init(uint32_t baud_rate)
-{
-  // Serial1 = uartOpen(USART1, NULL, baud_rate, MODE_RXTX);
-  // vcp_.init();
-}
-
-void BetaFPV::serial_write(const uint8_t *src, size_t len)
-{
-  vcp_.write(src, len);
-}
-
-uint16_t BetaFPV::serial_bytes_available()
-{
-  return vcp_.rx_bytes_waiting();
-}
-
-uint8_t BetaFPV::serial_read()
-{
-  return vcp_.read_byte();
-}
-
-void BetaFPV::serial_flush()
-{
-  // vcp_.flush();
-}
+void BetaFPV::serial_init(uint32_t baud_rate) { vcp_.init(); }
+void BetaFPV::serial_write(const uint8_t *src, size_t len) { vcp_.write(src, len); }
+uint16_t BetaFPV::serial_bytes_available() { return vcp_.rx_bytes_waiting(); }
+uint8_t BetaFPV::serial_read() { return vcp_.read_byte(); }
+void BetaFPV::serial_flush() { /*vcp_.flush();*/ }
 
 // sensors
 void BetaFPV::sensors_init()
 {
-  // // Initialize I2c
-  // i2cInit(I2CDEV_2);
-
-  // while(millis() < 50);
-
-  // i2cWrite(0,0,0);
-  // if (bmp280_init())
-  //   baro_type = BARO_BMP280;
-  // else if (ms5611_init())
-  //   baro_type = BARO_MS5611;
-
-  // hmc5883lInit(_board_revision);
-  // mb1242_init();
-  // ms4525_init();
-
-
-  // // IMU
-  // uint16_t acc1G;
-  // mpu6050_init(true, &acc1G, &_gyro_scale, _board_revision);
-  // _accel_scale = 9.80665f/acc1G;
+  imu_.init(&spi1_, &cs_);
 }
 
 uint16_t BetaFPV::num_sensor_errors()
@@ -132,27 +85,13 @@ bool BetaFPV::new_imu_data()
   return false;
 }
 
-bool BetaFPV::imu_read(float accel[3], float* temperature, float gyro[3], uint64_t* time_us)
+bool BetaFPV::imu_read(float accel[3], float *temperature, float gyro[3], uint64_t *time_us)
 {
-  // volatile int16_t gyro_raw[3], accel_raw[3];
-  // volatile int16_t raw_temp;
-  // mpu6050_async_read_all(accel_raw, &raw_temp, gyro_raw, time_us);
-
-  // accel[0] = accel_raw[0] * _accel_scale;
-  // accel[1] = -accel_raw[1] * _accel_scale;
-  // accel[2] = -accel_raw[2] * _accel_scale;
-
-  // gyro[0] = gyro_raw[0] * _gyro_scale;
-  // gyro[1] = -gyro_raw[1] * _gyro_scale;
-  // gyro[2] = -gyro_raw[2] * _gyro_scale;
-
-  // (*temperature) = (float)raw_temp/340.0f + 36.53f;
-
-  // if (accel[0] == 0 && accel[1] == 0 && accel[2] == 0)
-  // {
-  //   return false;
-  // }
-  // else return true;
+  // float acc[3];
+  // float gyro[3];
+  // float temp;
+  imu_.read(accel, gyro, temperature);
+  *time_us = micros();
 
   return false;
 }
@@ -192,14 +131,12 @@ void BetaFPV::rc_init(rc_type_t rc_type)
 
 float BetaFPV::rc_read(uint8_t channel)
 {
-  // return rc_->read(channel);
-  return 0.0f;
+  return rc_->read(channel);
 }
 
 bool BetaFPV::rc_lost()
 {
-  // return rc_->lost();
-  return true;
+  return rc_->lost();
 }
 
 // PWM

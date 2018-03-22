@@ -39,10 +39,16 @@ int main(void)
   rosflight_firmware::Mavlink mavlink(board);
   rosflight_firmware::ROSflight firmware(board, mavlink);
 
+  board.init_board();
+
+
   firmware.init();
+
 
   while(1)
   {
+    // delay(100);
+    // board.led1_toggle();
     firmware.run();
   }
   return 0;

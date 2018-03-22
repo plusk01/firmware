@@ -45,27 +45,17 @@ class BetaFPV : public Board
 private:
     VCP vcp_;
     airdamon::UART uart2_;
-    // I2C int_i2c_;
-    // I2C ext_i2c_;
-    // SPI spi1_;
-    // SPI spi3_;
-    // MPU6000 imu_;
+    SPI spi1_;
+    sensors::MPU6500 imu_;
+    GPIO cs_;
     LED led_;
 
     // RC polymorphism
     airdamon::sensors::RC* rc_ = nullptr;
     airdamon::sensors::RC_SBUS rc_sbus_;
 
-    std::function<void()> imu_callback_;
-
-    float _accel_scale = 1.0;
-    float _gyro_scale = 1.0;
-
 public:
   BetaFPV();
-
-  bool new_imu_data_;
-  uint64_t imu_time_us_;
 
   // setup
   void init_board();
