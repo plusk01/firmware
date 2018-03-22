@@ -44,25 +44,17 @@ class BetaFPV : public Board
 
 private:
     VCP vcp_;
+    airdamon::UART uart2_;
     // I2C int_i2c_;
     // I2C ext_i2c_;
     // SPI spi1_;
     // SPI spi3_;
     // MPU6000 imu_;
-    // HMC5883L mag_;
-    // MS5611 baro_;
-    // MS4525 airspeed_;
-    // RC_SBUS rc_sbus_;
-    // UART sbus_uart_;
-    // GPIO inv_pin_;
-    // RC_PPM rc_ppm_;
-    // PWM_OUT esc_out_[PWM_NUM_OUTPUTS];
-    // LED led2_;
-    // LED led1_;
-    // M25P16 flash_;
     LED led_;
 
-    // RC_BASE* rc_ = nullptr;
+    // RC polymorphism
+    airdamon::sensors::RC* rc_ = nullptr;
+    airdamon::sensors::RC_SBUS rc_sbus_;
 
     std::function<void()> imu_callback_;
 

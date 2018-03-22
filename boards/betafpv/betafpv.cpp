@@ -77,7 +77,7 @@ void BetaFPV::serial_init(uint32_t baud_rate)
 
 void BetaFPV::serial_write(const uint8_t *src, size_t len)
 {
-  // vcp_.write(src, len);
+  vcp_.write(src, len);
 }
 
 uint16_t BetaFPV::serial_bytes_available()
@@ -164,68 +164,15 @@ void BetaFPV::imu_not_responding_error()
   // sensors_init();
 }
 
-void BetaFPV::mag_read(float mag[3])
-{
-  // // Convert to NED
-  // int16_t raw_mag[3];
-  // //  hmc5883l_update();
-  // hmc5883l_request_async_update();
-  // hmc5883l_async_read(raw_mag);
-  mag[0] = 0; //(float)raw_mag[0];
-  mag[1] = 0; //(float)raw_mag[1];
-  mag[2] = 0; //(float)raw_mag[2];
-}
-
-bool BetaFPV::mag_check()
-{
-  return false;
-}
-
-void BetaFPV::baro_read(float *pressure, float *temperature)
-{
-  // if (baro_type == BARO_BMP280)
-  // {
-  //   bmp280_async_update();
-  //   bmp280_async_read(pressure, temperature);
-  // }
-  // else if (baro_type == BARO_MS5611)
-  // {
-  //   ms5611_async_update();
-  //   ms5611_async_read(pressure, temperature);
-  // }
-}
-
-bool BetaFPV::baro_check()
-{
-  return false;
-}
-
-bool BetaFPV::diff_pressure_check()
-{
-  return false;
-}
-
-void BetaFPV::diff_pressure_read(float *diff_pressure, float *temperature)
-{
-  // ms4525_async_update();
-  // ms4525_async_read(diff_pressure, temperature);
-}
-
-bool BetaFPV::sonar_check()
-{
-  return false;
-}
-
-float BetaFPV::sonar_read()
-{
-  return 0.0f;
-}
-
-uint16_t num_sensor_errors()
-{
-  // return i2cGetErrorCounter();
-  return 0;
-}
+// unused sensors
+void BetaFPV::mag_read(float mag[3]) { mag[0] = mag[1] = mag[2] = 0; }
+bool BetaFPV::mag_check() { return false; }
+void BetaFPV::baro_read(float *pressure, float *temperature) { *pressure = *temperature = 0; }
+bool BetaFPV::baro_check() { return false; }
+bool BetaFPV::diff_pressure_check() { return false; }
+void BetaFPV::diff_pressure_read(float *diff_pressure, float *temperature) { *diff_pressure = *temperature = 0; }
+bool BetaFPV::sonar_check() { return false; }
+float BetaFPV::sonar_read() { return 0.0f; }
 
 // RC
 void BetaFPV::rc_init(rc_type_t rc_type)
@@ -234,10 +181,9 @@ void BetaFPV::rc_init(rc_type_t rc_type)
   {
   default:
   case RC_TYPE_SBUS:
-    // sbus_uart_.init(&uart_config[0], 100000, UART::MODE_8E2);
-    // inv_pin_.init(SBUS_INV_GPIO, SBUS_INV_PIN, GPIO::OUTPUT);
-    // rc_sbus_.init(&inv_pin_, &sbus_uart_);
-    // rc_ = &rc_sbus_;
+    uart2_.init(&uart_config[CFG_UART2]);
+    rc_sbus_.init(&uart2_);
+    rc_ = &rc_sbus_;
     break;
   case RC_TYPE_PPM:
     break;
@@ -290,9 +236,9 @@ void BetaFPV::led0_on() { /*LED0_ON*/; }
 void BetaFPV::led0_off() { /*LED0_OFF*/; }
 void BetaFPV::led0_toggle() { /*LED0_TOGGLE*/; }
 
-void BetaFPV::led1_on() { /*LED1_ON*/; }
-void BetaFPV::led1_off() { /*LED1_OFF*/; }
-void BetaFPV::led1_toggle() { /*LED1_TOGGLE*/; }
+void BetaFPV::led1_on() { led_.on(); }
+void BetaFPV::led1_off() { led_.off(); }
+void BetaFPV::led1_toggle() { led_.toggle(); }
 
 }
 
