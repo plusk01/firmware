@@ -41,15 +41,18 @@ BetaFPV::BetaFPV(){}
 void BetaFPV::init_board()
 {
   board_init();
+
+  led_.init(GPIOB, GPIO_Pin_8);
 }
 
 void BetaFPV::board_reset(bool bootloader)
 {
   // systemReset(bootloader);
+  // ()bootloader;
+  //   NVIC_SystemReset();
 }
 
 // clock
-
 uint32_t BetaFPV::clock_millis()
 {
   return millis();
@@ -66,34 +69,33 @@ void BetaFPV::clock_delay(uint32_t milliseconds)
 }
 
 // serial
-
 void BetaFPV::serial_init(uint32_t baud_rate)
 {
   // Serial1 = uartOpen(USART1, NULL, baud_rate, MODE_RXTX);
+  // vcp_.init();
 }
 
 void BetaFPV::serial_write(const uint8_t *src, size_t len)
 {
-  for (size_t i = 0; i < len; i++)
-  {
-    // serialWrite(Serial1, src[i]);
-  }
+  // vcp_.write(src, len);
 }
 
-uint16_t BetaFPV::serial_bytes_available(void)
+uint16_t BetaFPV::serial_bytes_available()
 {
-  // return serialTotalBytesWaiting(Serial1);
-  return 0;
+  return vcp_.rx_bytes_waiting();
 }
 
-uint8_t BetaFPV::serial_read(void)
+uint8_t BetaFPV::serial_read()
 {
-  // return serialRead(Serial1);
-  return 'A';
+  return vcp_.read_byte();
+}
+
+void BetaFPV::serial_flush()
+{
+  // vcp_.flush();
 }
 
 // sensors
-
 void BetaFPV::sensors_init()
 {
   // // Initialize I2c
@@ -118,7 +120,7 @@ void BetaFPV::sensors_init()
   // _accel_scale = 9.80665f/acc1G;
 }
 
-uint16_t BetaFPV::num_sensor_errors(void)
+uint16_t BetaFPV::num_sensor_errors()
 {
   // return i2cGetErrorCounter();
   return 0;
@@ -155,7 +157,7 @@ bool BetaFPV::imu_read(float accel[3], float* temperature, float gyro[3], uint64
   return false;
 }
 
-void BetaFPV::imu_not_responding_error(void)
+void BetaFPV::imu_not_responding_error()
 {
   // // If the IMU is not responding, then we need to change where we look for the interrupt
   // _board_revision = (_board_revision < 4) ? 5 : 2;
@@ -174,7 +176,7 @@ void BetaFPV::mag_read(float mag[3])
   mag[2] = 0; //(float)raw_mag[2];
 }
 
-bool BetaFPV::mag_check(void)
+bool BetaFPV::mag_check()
 {
   return false;
 }
@@ -198,7 +200,7 @@ bool BetaFPV::baro_check()
   return false;
 }
 
-bool BetaFPV::diff_pressure_check(void)
+bool BetaFPV::diff_pressure_check()
 {
   return false;
 }
@@ -209,74 +211,88 @@ void BetaFPV::diff_pressure_read(float *diff_pressure, float *temperature)
   // ms4525_async_read(diff_pressure, temperature);
 }
 
-bool BetaFPV::sonar_check(void)
+bool BetaFPV::sonar_check()
 {
   return false;
 }
 
-float BetaFPV::sonar_read(void)
+float BetaFPV::sonar_read()
 {
   return 0.0f;
 }
 
-uint16_t num_sensor_errors(void)
+uint16_t num_sensor_errors()
 {
   // return i2cGetErrorCounter();
   return 0;
 }
 
-// PWM
+// RC
+void BetaFPV::rc_init(rc_type_t rc_type)
+{
+  switch (rc_type)
+  {
+  default:
+  case RC_TYPE_SBUS:
+    // sbus_uart_.init(&uart_config[0], 100000, UART::MODE_8E2);
+    // inv_pin_.init(SBUS_INV_GPIO, SBUS_INV_PIN, GPIO::OUTPUT);
+    // rc_sbus_.init(&inv_pin_, &sbus_uart_);
+    // rc_ = &rc_sbus_;
+    break;
+  case RC_TYPE_PPM:
+    break;
+  }
+}
 
-void BetaFPV::pwm_init(bool cppm, uint32_t refresh_rate, uint16_t idle_pwm)
+float BetaFPV::rc_read(uint8_t channel)
+{
+  // return rc_->read(channel);
+  return 0.0f;
+}
+
+bool BetaFPV::rc_lost()
+{
+  // return rc_->lost();
+  return true;
+}
+
+// PWM
+void BetaFPV::pwm_init(uint32_t refresh_rate, uint16_t idle_pwm)
 {
   // pwmInit(cppm, false, false, refresh_rate, idle_pwm);
 }
 
-uint16_t BetaFPV::pwm_read(uint8_t channel)
+void BetaFPV::pwm_write(uint8_t channel, float value)
 {
-  // return pwmRead(channel);
-  return 0;
-}
-
-void BetaFPV::pwm_write(uint8_t channel, uint16_t value)
-{
-  // pwmWriteMotor(channel, value);
-}
-
-bool BetaFPV::pwm_lost()
-{
-  // return ((millis() - pwmLastUpdate()) > 40);
-  return true;
+  // esc_out_[channel].write(value);
 }
 
 // non-volatile memory
-
-void BetaFPV::memory_init(void)
+void BetaFPV::memory_init()
 {
   // initEEPROM();
 }
 
-bool BetaFPV::memory_read(void * dest, size_t len)
+bool BetaFPV::memory_read(void *data, size_t len)
 {
   // return readEEPROM(dest, len);
   return false;
 }
 
-bool BetaFPV::memory_write(const void * src, size_t len)
+bool BetaFPV::memory_write(void *data, size_t len)
 {
   // return writeEEPROM(src, len);
   return false;
 }
 
 // LED
+void BetaFPV::led0_on() { /*LED0_ON*/; }
+void BetaFPV::led0_off() { /*LED0_OFF*/; }
+void BetaFPV::led0_toggle() { /*LED0_TOGGLE*/; }
 
-void BetaFPV::led0_on(void) { /*LED0_ON*/; }
-void BetaFPV::led0_off(void) { /*LED0_OFF*/; }
-void BetaFPV::led0_toggle(void) { /*LED0_TOGGLE*/; }
-
-void BetaFPV::led1_on(void) { /*LED1_ON*/; }
-void BetaFPV::led1_off(void) { /*LED1_OFF*/; }
-void BetaFPV::led1_toggle(void) { /*LED1_TOGGLE*/; }
+void BetaFPV::led1_on() { /*LED1_ON*/; }
+void BetaFPV::led1_off() { /*LED1_OFF*/; }
+void BetaFPV::led1_toggle() { /*LED1_TOGGLE*/; }
 
 }
 

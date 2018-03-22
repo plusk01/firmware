@@ -43,32 +43,31 @@ class BetaFPV : public Board
 {
 
 private:
-  // serialPort_t *Serial1;
+    VCP vcp_;
+    // I2C int_i2c_;
+    // I2C ext_i2c_;
+    // SPI spi1_;
+    // SPI spi3_;
+    // MPU6000 imu_;
+    // HMC5883L mag_;
+    // MS5611 baro_;
+    // MS4525 airspeed_;
+    // RC_SBUS rc_sbus_;
+    // UART sbus_uart_;
+    // GPIO inv_pin_;
+    // RC_PPM rc_ppm_;
+    // PWM_OUT esc_out_[PWM_NUM_OUTPUTS];
+    // LED led2_;
+    // LED led1_;
+    // M25P16 flash_;
+    LED led_;
 
-  // std::function<void(void)> imu_callback_;
+    // RC_BASE* rc_ = nullptr;
 
-  // int _board_revision = 2;
+    std::function<void()> imu_callback_;
 
-  // float _accel_scale = 1.0;
-  // float _gyro_scale = 1.0;
-
-  // enum
-  // {
-  //   SONAR_NONE,
-  //   SONAR_I2C,
-  //   SONAR_PWM
-  // };
-  // uint8_t sonar_type = SONAR_NONE;
-
-  // enum
-  // {
-  //   BARO_NONE,
-  //   BARO_BMP280,
-  //   BARO_MS5611
-  // };
-  // uint8_t baro_type = BARO_NONE;
-
-
+    float _accel_scale = 1.0;
+    float _gyro_scale = 1.0;
 
 public:
   BetaFPV();
@@ -77,7 +76,7 @@ public:
   uint64_t imu_time_us_;
 
   // setup
-  void init_board(void);
+  void init_board();
   void board_reset(bool bootloader);
 
   // clock
@@ -88,49 +87,52 @@ public:
   // serial
   void serial_init(uint32_t baud_rate);
   void serial_write(const uint8_t *src, size_t len);
-  uint16_t serial_bytes_available(void);
-  uint8_t serial_read(void);
+  uint16_t serial_bytes_available();
+  uint8_t serial_read();
+  void serial_flush();
 
   // sensors
   void sensors_init();
-  uint16_t num_sensor_errors(void);
+  uint16_t num_sensor_errors();
 
   bool new_imu_data();
-  bool imu_read(float accel[3], float* temperature, float gyro[3], uint64_t* time_us);
+  bool imu_read(float accel[3], float *temperature, float gyro[3], uint64_t *time_us);
   void imu_not_responding_error();
 
-  bool mag_check(void);
+  bool mag_check();
   void mag_read(float mag[3]);
 
   bool baro_check();
   void baro_read(float *pressure, float *temperature);
 
-  bool diff_pressure_check(void);
+  bool diff_pressure_check();
   void diff_pressure_read(float *diff_pressure, float *temperature);
 
-  bool sonar_check(void);
-  float sonar_read(void);
+  bool sonar_check();
+  float sonar_read();
+
+  // RC
+  void rc_init(rc_type_t rc_type);
+  bool rc_lost();
+  float rc_read(uint8_t channel);
 
   // PWM
-  // TODO make these deal in normalized (-1 to 1 or 0 to 1) values (not pwm-specific)
-  void pwm_init(bool cppm, uint32_t refresh_rate, uint16_t idle_pwm);
-  bool pwm_lost();
-  uint16_t pwm_read(uint8_t channel);
-  void pwm_write(uint8_t channel, uint16_t value);
+  void pwm_init(uint32_t refresh_rate, uint16_t idle_pwm);
+  void pwm_write(uint8_t channel, float value);
 
   // non-volatile memory
-  void memory_init(void);
-  bool memory_read(void * dest, size_t len);
-  bool memory_write(const void * src, size_t len);
+  void memory_init();
+  bool memory_read(void *dest, size_t len);
+  bool memory_write(void *src, size_t len);
 
   // LEDs
-  void led0_on(void);
-  void led0_off(void);
-  void led0_toggle(void);
+  void led0_on();
+  void led0_off();
+  void led0_toggle();
 
-  void led1_on(void);
-  void led1_off(void);
-  void led1_toggle(void);
+  void led1_on();
+  void led1_off();
+  void led1_toggle();
 };
 
 }

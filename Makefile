@@ -48,12 +48,17 @@ PARALLEL_JOBS	:= $(shell grep -c ^processor /proc/cpuinfo)
 #################################
 # List of valid boards (update with new boards)
 VALID_F1_BOARDS = NAZE
+VALID_F3_BOARDS = BETAFPV
 VALID_F4_BOARDS = REVO
 
 # Make sure that the supplied board is supported, and if so,
 # set the proper board directory
 ifeq ($(BOARD),$(filter $(BOARD),$(VALID_F4_BOARDS)))
 BOARD_DIR=boards/airbourne
+endif
+
+ifeq ($(BOARD),$(filter $(BOARD),$(VALID_F3_BOARDS)))
+PROC_DIR=betafpv
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD),$(VALID_F1_BOARDS)))
@@ -65,6 +70,9 @@ $(info Invalid BOARD: $(BOARD))
 $(info =================================)
 $(info VALID F1 BOARDS:)
 $(info $(VALID_F1_BOARDS))
+$(info =================================)
+$(info VALID F3 BOARDS:)
+$(info $(VALID_F3_BOARDS))
 $(info =================================)
 $(info VALID F4 BOARDS:)
 $(info $(VALID_F4_BOARDS))

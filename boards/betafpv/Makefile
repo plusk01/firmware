@@ -53,7 +53,8 @@ include $(BOARD_DIR)/board.mk
 # Include Directories
 #################################
 
-INCLUDE_DIRS += $(ROSFLIGHT_DIR)/include \
+INCLUDE_DIRS += $(TARGET_DIR) \
+				$(ROSFLIGHT_DIR)/include \
                 $(ROSFLIGHT_DIR)/lib \
                 $(MAVLINK_DIR)
 
@@ -81,14 +82,6 @@ TARGET_SRC = $(notdir $(wildcard $(TARGET_DIR)/*.cpp))
 ASOURCES   +=
 CSOURCES   +=
 CXXSOURCES += $(TARGET_SRC) $(ROSFLIGHT_SRC) $(MATH_SRC) $(MAVLINK_SRC)
-
-#################################
-# VERSION CONTROL
-#################################
-
-GIT_VERSION_HASH := $(shell git rev-parse --short=8 HEAD)
-GIT_VERSION_STRING := $(shell git describe --tags --abbrev=8 --always --dirty --long)
-GIT_VARS := -DGIT_VERSION_HASH=0x$(GIT_VERSION_HASH) -DGIT_VERSION_STRING=\"$(GIT_VERSION_STRING)\"
 
 #################################
 # Object List
@@ -122,6 +115,14 @@ LTO_FLAGS = -flto -fuse-linker-plugin $(OPTIMIZE)
 endif
 
 #################################
+# VERSION CONTROL
+#################################
+
+GIT_VERSION_HASH := $(shell git rev-parse --short=8 HEAD)
+GIT_VERSION_STRING := $(shell git describe --tags --abbrev=8 --always --dirty --long)
+GIT_VARS := -DGIT_VERSION_HASH=0x$(GIT_VERSION_HASH) -DGIT_VERSION_STRING=\"$(GIT_VERSION_STRING)\"
+
+#################################
 # Flags
 #################################
 
@@ -131,10 +132,10 @@ endif
 #  -Wctor-dtor-privacy -Wnoexcept -Wold-style-cast -Woverloaded-virtual -Wsign-promo -Wstrict-null-sentinel
 
 CFLAGS    = $(CHIP_CFLAGS)   $(BOARD_CFLAGS)   $(LTO_FLAGS) $(OPTIMIZE_FLAGS) $(DEBUG_FLAGS)
-CFLAGS   += $(addprefix -I,$(INCLUDE_DIRS))
+CFLAGS   += $(addprefix -I,$(INCLUDE_DIRS)) $(GIT_VARS)
 
 CXXFLAGS  = $(CHIP_CXXFLAGS) $(BOARD_CXXFLAGS) $(LTO_FLAGS) $(OPTIMIZE_FLAGS) $(DEBUG_FLAGS)
-CXXFLAGS += $(addprefix -I,$(INCLUDE_DIRS)) $(CXX_STRICT_FLAGS)
+CXXFLAGS += $(addprefix -I,$(INCLUDE_DIRS)) $(CXX_STRICT_FLAGS) $(GIT_VARS)
 
 LDFLAGS   = $(CHIP_LDFLAGS)  $(BOARD_LDFLAGS)
 

@@ -9,4 +9,4 @@
 	url = https://github.com/rosflight/airbourne_f4.git
 [submodule "boards/betafpv/lib/airdamon_f3"]
 	path = boards/betafpv/lib/airdamon_f3
-	url = https://github.com/plusk01/airdamon_f3.git
+	url = git@github.com:plusk01/airdamon_f3.git
