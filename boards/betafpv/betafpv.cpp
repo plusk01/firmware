@@ -44,7 +44,7 @@ void BetaFPV::init_board()
 
   led_.init(GPIOB, GPIO_Pin_8);
 
-  spi1_.init(SPI1);
+  spi1_.init(&spi_config[CFG_SPI1]);
   cs_.init(GPIOB, GPIO_Pin_9, GPIO::OUTPUT);
 }
 
@@ -81,27 +81,16 @@ uint16_t BetaFPV::num_sensor_errors()
 
 bool BetaFPV::new_imu_data()
 {
-  // return mpu6050_new_data();
-  return false;
+  return imu_.has_new_data();
 }
 
 bool BetaFPV::imu_read(float accel[3], float *temperature, float gyro[3], uint64_t *time_us)
 {
-  // float acc[3];
-  // float gyro[3];
-  // float temp;
-  imu_.read(accel, gyro, temperature);
-  *time_us = micros();
-
-  return false;
+  imu_.read(accel, gyro, temperature, time_us);
+  return true;
 }
 
-void BetaFPV::imu_not_responding_error()
-{
-  // // If the IMU is not responding, then we need to change where we look for the interrupt
-  // _board_revision = (_board_revision < 4) ? 5 : 2;
-  // sensors_init();
-}
+void BetaFPV::imu_not_responding_error() { sensors_init(); }
 
 // unused sensors
 void BetaFPV::mag_read(float mag[3]) { mag[0] = mag[1] = mag[2] = 0; }

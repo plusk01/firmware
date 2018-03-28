@@ -45,8 +45,8 @@ class BetaFPV : public Board
 private:
     VCP vcp_;
     airdamon::UART uart2_;
-    SPI spi1_;
-    sensors::MPU6500 imu_;
+    airdamon::SPI spi1_;
+    airdamon::sensors::MPU6500 imu_;
     GPIO cs_;
     LED led_;
 
