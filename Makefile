@@ -58,7 +58,7 @@ BOARD_DIR=boards/airbourne
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD),$(VALID_F3_BOARDS)))
-PROC_DIR=betafpv
+BOARD_DIR=boards/betafpv
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD),$(VALID_F1_BOARDS)))
@@ -89,6 +89,7 @@ all:
 clean:
 	cd boards/airbourne && make clean
 	cd boards/breezy && make clean
+	cd boards/betafpv && make clean
 
 flash:
 	cd $(BOARD_DIR) && make -j$(PARALLEL_JOBS) -l$(PARALLEL_JOBS) DEBUG=$(DEBUG) SERIAL_DEVICE=$(SERIAL_DEVICE) flash

@@ -36,8 +36,6 @@
 
 namespace rosflight_firmware {
 
-BetaFPV::BetaFPV(){}
-
 void BetaFPV::init_board()
 {
   board_init();
@@ -61,7 +59,7 @@ uint64_t BetaFPV::clock_micros() { return micros(); }
 void BetaFPV::clock_delay(uint32_t milliseconds) { delay(milliseconds); }
 
 // serial
-void BetaFPV::serial_init(uint32_t baud_rate) { vcp_.init(); }
+void BetaFPV::serial_init(uint32_t baud_rate, uint32_t dev) { vcp_.init(); }
 void BetaFPV::serial_write(const uint8_t *src, size_t len) { vcp_.write(src, len); }
 uint16_t BetaFPV::serial_bytes_available() { return vcp_.rx_bytes_waiting(); }
 uint8_t BetaFPV::serial_read() { return vcp_.read_byte(); }
@@ -70,6 +68,7 @@ void BetaFPV::serial_flush() { /*vcp_.flush();*/ }
 // sensors
 void BetaFPV::sensors_init()
 {
+  while(millis() < 50); // wait for sensors to boot up
   imu_.init(&spi1_, &cs_);
 }
 
@@ -93,18 +92,25 @@ bool BetaFPV::imu_read(float accel[3], float *temperature, float gyro[3], uint64
 void BetaFPV::imu_not_responding_error() { sensors_init(); }
 
 // unused sensors
+bool BetaFPV::mag_present() { return false; }
+void BetaFPV::mag_update() {}
 void BetaFPV::mag_read(float mag[3]) { mag[0] = mag[1] = mag[2] = 0; }
-bool BetaFPV::mag_check() { return false; }
+bool BetaFPV::baro_present() { return false; }
 void BetaFPV::baro_read(float *pressure, float *temperature) { *pressure = *temperature = 0; }
-bool BetaFPV::baro_check() { return false; }
-bool BetaFPV::diff_pressure_check() { return false; }
+void BetaFPV::baro_update() {}
+bool BetaFPV::diff_pressure_present() { return false; }
 void BetaFPV::diff_pressure_read(float *diff_pressure, float *temperature) { *diff_pressure = *temperature = 0; }
-bool BetaFPV::sonar_check() { return false; }
+void BetaFPV::diff_pressure_update() {}
+bool BetaFPV::sonar_present() { return false; }
 float BetaFPV::sonar_read() { return 0.0f; }
+void BetaFPV::sonar_update() {}
 
 // RC
 void BetaFPV::rc_init(rc_type_t rc_type)
 {
+  // TODO: We don't know what to do unless RC is SBUS
+  rc_type = RC_TYPE_SBUS;
+
   switch (rc_type)
   {
   default:
@@ -134,6 +140,14 @@ void BetaFPV::pwm_init(uint32_t refresh_rate, uint16_t idle_pwm)
   // pwmInit(cppm, false, false, refresh_rate, idle_pwm);
 }
 
+void BetaFPV::pwm_disable()
+{
+  // for (int i = 0; i < PWM_NUM_OUTPUTS; i++)
+  // {
+  //   esc_out_[i].disable();
+  // }
+}
+
 void BetaFPV::pwm_write(uint8_t channel, float value)
 {
   // esc_out_[channel].write(value);
@@ -151,21 +165,26 @@ bool BetaFPV::memory_read(void *data, size_t len)
   return false;
 }
 
-bool BetaFPV::memory_write(void *data, size_t len)
+bool BetaFPV::memory_write(const void *data, size_t len)
 {
   // return writeEEPROM(src, len);
   return false;
 }
 
-// LED
-void BetaFPV::led0_on() { /*LED0_ON*/; }
-void BetaFPV::led0_off() { /*LED0_OFF*/; }
-void BetaFPV::led0_toggle() { /*LED0_TOGGLE*/; }
+// LED 0 is RC override status
+void BetaFPV::led0_on() {}
+void BetaFPV::led0_off() {}
+void BetaFPV::led0_toggle() {}
 
+// LED 1 is arming status
 void BetaFPV::led1_on() { led_.on(); }
 void BetaFPV::led1_off() { led_.off(); }
 void BetaFPV::led1_toggle() { led_.toggle(); }
 
-}
+// Backup memory
+bool BetaFPV::has_backup_data() { return false; }
+rosflight_firmware::BackupData BetaFPV::get_backup_data() { return {}; }
+
+} // ns rosflight_firmware
 
 // #pragma GCC diagnostic pop

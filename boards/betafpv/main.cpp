@@ -40,12 +40,9 @@ int main(void)
   rosflight_firmware::ROSflight firmware(board, mavlink);
 
   board.init_board();
-
-
   firmware.init();
 
-
-  while(1)
+  while (true)
   {
     // delay(100);
     // board.led1_toggle();
