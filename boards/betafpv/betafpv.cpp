@@ -85,7 +85,18 @@ bool BetaFPV::new_imu_data()
 
 bool BetaFPV::imu_read(float accel[3], float *temperature, float gyro[3], uint64_t *time_us)
 {
-  imu_.read(accel, gyro, temperature, time_us);
+  float read_accel[3], read_gyro[3];
+  imu_.read(read_accel, read_gyro, temperature, time_us);
+
+  // transform to body FLU coordinate frame
+  accel[0] = -read_accel[0];
+  accel[1] =  read_accel[1];
+  accel[2] = -read_accel[2];
+
+  gyro[0] = -read_gyro[0];
+  gyro[1] =  read_gyro[1];
+  gyro[2] = -read_gyro[2];
+
   return true;
 }
 
