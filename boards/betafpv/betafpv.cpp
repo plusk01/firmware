@@ -165,7 +165,29 @@ void BetaFPV::pwm_disable()
 
 void BetaFPV::pwm_write(uint8_t channel, float value)
 {
-  motors_[channel].write(value);
+  uint8_t ch = channel;
+
+  // Instead of defining a new mixer or crossing wires,
+  // we will just hardcode the proper motor number here.
+  switch (channel)
+  {
+    case 0:
+      ch = 1;
+      break;
+    case 1:
+      ch = 0;
+      break;
+    case 2:
+      ch = 2;
+      break;
+    case 3:
+      ch = 3;
+      break;
+    default:
+      ch = channel;
+  }
+
+  motors_[ch].write(value);
 }
 
 // non-volatile memory
