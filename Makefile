@@ -35,7 +35,7 @@
 BOARD  ?= REVO
 
 # Debugger options, must be empty or GDB
-DEBUG ?=
+DEBUG ?= GDB
 
 # Serial port/device for flashing
 SERIAL_DEVICE	?= /dev/ttyACM0

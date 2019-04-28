@@ -44,8 +44,8 @@ int main(void)
 
   while (true)
   {
-    // delay(100);
-    // board.led1_toggle();
+    delay(100);
+    board.led1_toggle();
     firmware.run();
   }
   return 0;

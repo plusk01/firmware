@@ -85,17 +85,17 @@ bool DiscoveryF3::new_imu_data()
 
 bool DiscoveryF3::imu_read(float accel[3], float *temperature, float gyro[3], uint64_t *time_us)
 {
-  float read_accel[3], read_gyro[3];
+  float read_accel[3] = {0}, read_gyro[3] = {0};
   imu_.read(read_accel, read_gyro, temperature, time_us);
 
   // transform to body FLU coordinate frame
-  accel[0] = -read_accel[0];
-  accel[1] =  read_accel[1];
-  accel[2] = -read_accel[2];
+  accel[0] = -0.02f;
+  accel[1] =  0.001f;
+  accel[2] = -9.80655f;
 
-  gyro[0] = -read_gyro[0];
-  gyro[1] =  read_gyro[1];
-  gyro[2] = -read_gyro[2];
+  gyro[0] = -0.1f;
+  gyro[1] =  0.002f;
+  gyro[2] = -0.05f;
 
   return true;
 }
@@ -137,7 +137,11 @@ void DiscoveryF3::rc_init(rc_type_t rc_type)
 
 float DiscoveryF3::rc_read(uint8_t channel)
 {
-  return rc_->read(channel);
+//    if (rc_ != nullptr) {
+//        return rc_->read(channel);
+//    }
+
+    return 0.0f;
 }
 
 bool DiscoveryF3::rc_lost()
@@ -148,7 +152,8 @@ bool DiscoveryF3::rc_lost()
 // PWM
 void DiscoveryF3::pwm_init(uint32_t refresh_rate, uint16_t idle_pwm)
 {
-  // pwmInit(cppm, false, false, refresh_rate, idle_pwm);
+  motors_[0].init(&pwm_config[0], 16000, 1000, 2000);
+  motors_[1].init(&pwm_config[1], 16000, 1000, 2000);
 }
 
 void DiscoveryF3::pwm_disable()

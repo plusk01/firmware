@@ -33,7 +33,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <discoveryf3.h>
+#include <lib/airdamon_f3/boards/discoveryf3/discoveryf3.h>
 
 /// Gross hack to allow discovery access to extra drivers
 #include "pwm.h"
@@ -45,6 +45,19 @@
 
 namespace rosflight_firmware {
 
+///////////////////////////////////////////////////////////////////////////////
+//                            PWM Configuration                              //
+///////////////////////////////////////////////////////////////////////////////
+
+constexpr int NUM_PWMS = 4;
+const airdamon::PWMConfig pwm_config[NUM_PWMS] = {
+  // TIMx, channel, GPIOx, pin, pin_source, GPIO_AF, TIMx_IRQn
+  {TIM2, TIM_Channel_1, GPIOA, GPIO_Pin_0, GPIO_PinSource0, GPIO_AF_1, TIM2_IRQn},
+  {TIM2, TIM_Channel_2, GPIOA, GPIO_Pin_1, GPIO_PinSource1, GPIO_AF_1, TIM2_IRQn},
+  {TIM2, TIM_Channel_3, GPIOA, GPIO_Pin_2, GPIO_PinSource2, GPIO_AF_1, TIM2_IRQn},
+  {TIM2, TIM_Channel_4, GPIOA, GPIO_Pin_3, GPIO_PinSource3, GPIO_AF_1, TIM2_IRQn},
+};
+
 class DiscoveryF3 : public Board
 {
 
@@ -55,6 +68,8 @@ private:
     airdamon::sensors::MPU6500 imu_;
     GPIO cs_;
     LED led_;
+
+    airdamon::PWM motors_[2];
 
     // RC polymorphism
     airdamon::sensors::RC* rc_ = nullptr;
