@@ -54,6 +54,9 @@ private:
     airdamon::sensors::RC* rc_ = nullptr;
     airdamon::sensors::RC_SBUS rc_sbus_;
 
+    // brushed pwm motors
+    airdamon::PWM motors_[NUM_PWMS];
+
 public:
   BetaFPV() = default;
 

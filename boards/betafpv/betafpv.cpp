@@ -148,20 +148,24 @@ bool BetaFPV::rc_lost()
 // PWM
 void BetaFPV::pwm_init(uint32_t refresh_rate, uint16_t idle_pwm)
 {
-  // pwmInit(cppm, false, false, refresh_rate, idle_pwm);
+  for (uint8_t i=0; i<NUM_PWMS; ++i)
+  {
+      motors_[i].init(&pwm_config[i], 16000, 1000, 2000);
+      motors_[i].write_us(1000);
+  }
 }
 
 void BetaFPV::pwm_disable()
 {
-  // for (int i = 0; i < PWM_NUM_OUTPUTS; i++)
-  // {
-  //   esc_out_[i].disable();
-  // }
+  for (uint8_t i=0; i<NUM_PWMS; ++i)
+  {
+    // motors_[i].disable();
+  }
 }
 
 void BetaFPV::pwm_write(uint8_t channel, float value)
 {
-  // esc_out_[channel].write(value);
+  motors_[channel].write(value);
 }
 
 // non-volatile memory
