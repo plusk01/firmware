@@ -32,21 +32,21 @@
 // #pragma GCC diagnostic push
 // #pragma GCC diagnostic ignored "-Wold-style-cast"
 
-#include "betafpv.h"
+#include "discoveryf3.h"
 
 namespace rosflight_firmware {
 
-void BetaFPV::init_board()
+void DiscoveryF3::init_board()
 {
   board_init();
 
-  led_.init(GPIOB, GPIO_Pin_8);
+  led_.init(GPIOE, GPIO_Pin_13);
 
   spi1_.init(&spi_config[CFG_SPI1]);
   cs_.init(GPIOB, GPIO_Pin_9, GPIO::OUTPUT);
 }
 
-void BetaFPV::board_reset(bool bootloader)
+void DiscoveryF3::board_reset(bool bootloader)
 {
   // systemReset(bootloader);
   // ()bootloader;
@@ -54,36 +54,36 @@ void BetaFPV::board_reset(bool bootloader)
 }
 
 // clock
-uint32_t BetaFPV::clock_millis() { return millis(); }
-uint64_t BetaFPV::clock_micros() { return micros(); }
-void BetaFPV::clock_delay(uint32_t milliseconds) { delay(milliseconds); }
+uint32_t DiscoveryF3::clock_millis() { return millis(); }
+uint64_t DiscoveryF3::clock_micros() { return micros(); }
+void DiscoveryF3::clock_delay(uint32_t milliseconds) { delay(milliseconds); }
 
 // serial
-void BetaFPV::serial_init(uint32_t baud_rate, uint32_t dev) { vcp_.init(); }
-void BetaFPV::serial_write(const uint8_t *src, size_t len) { vcp_.write(src, len); }
-uint16_t BetaFPV::serial_bytes_available() { return vcp_.rx_bytes_waiting(); }
-uint8_t BetaFPV::serial_read() { return vcp_.read_byte(); }
-void BetaFPV::serial_flush() { /*vcp_.flush();*/ }
+void DiscoveryF3::serial_init(uint32_t baud_rate, uint32_t dev) { vcp_.init(); }
+void DiscoveryF3::serial_write(const uint8_t *src, size_t len) { vcp_.write(src, len); }
+uint16_t DiscoveryF3::serial_bytes_available() { return vcp_.rx_bytes_waiting(); }
+uint8_t DiscoveryF3::serial_read() { return vcp_.read_byte(); }
+void DiscoveryF3::serial_flush() { /*vcp_.flush();*/ }
 
 // sensors
-void BetaFPV::sensors_init()
+void DiscoveryF3::sensors_init()
 {
   while(millis() < 50); // wait for sensors to boot up
   imu_.init(&spi1_, &cs_);
 }
 
-uint16_t BetaFPV::num_sensor_errors()
+uint16_t DiscoveryF3::num_sensor_errors()
 {
   // return i2cGetErrorCounter();
   return 0;
 }
 
-bool BetaFPV::new_imu_data()
+bool DiscoveryF3::new_imu_data()
 {
-  return imu_.has_new_data();
+  return true; //imu_.has_new_data();
 }
 
-bool BetaFPV::imu_read(float accel[3], float *temperature, float gyro[3], uint64_t *time_us)
+bool DiscoveryF3::imu_read(float accel[3], float *temperature, float gyro[3], uint64_t *time_us)
 {
   float read_accel[3], read_gyro[3];
   imu_.read(read_accel, read_gyro, temperature, time_us);
@@ -100,24 +100,24 @@ bool BetaFPV::imu_read(float accel[3], float *temperature, float gyro[3], uint64
   return true;
 }
 
-void BetaFPV::imu_not_responding_error() { sensors_init(); }
+void DiscoveryF3::imu_not_responding_error() { /*sensors_init();*/ }
 
 // unused sensors
-bool BetaFPV::mag_present() { return false; }
-void BetaFPV::mag_update() {}
-void BetaFPV::mag_read(float mag[3]) { mag[0] = mag[1] = mag[2] = 0; }
-bool BetaFPV::baro_present() { return false; }
-void BetaFPV::baro_read(float *pressure, float *temperature) { *pressure = *temperature = 0; }
-void BetaFPV::baro_update() {}
-bool BetaFPV::diff_pressure_present() { return false; }
-void BetaFPV::diff_pressure_read(float *diff_pressure, float *temperature) { *diff_pressure = *temperature = 0; }
-void BetaFPV::diff_pressure_update() {}
-bool BetaFPV::sonar_present() { return false; }
-float BetaFPV::sonar_read() { return 0.0f; }
-void BetaFPV::sonar_update() {}
+bool DiscoveryF3::mag_present() { return false; }
+void DiscoveryF3::mag_update() {}
+void DiscoveryF3::mag_read(float mag[3]) { mag[0] = mag[1] = mag[2] = 0; }
+bool DiscoveryF3::baro_present() { return false; }
+void DiscoveryF3::baro_read(float *pressure, float *temperature) { *pressure = *temperature = 0; }
+void DiscoveryF3::baro_update() {}
+bool DiscoveryF3::diff_pressure_present() { return false; }
+void DiscoveryF3::diff_pressure_read(float *diff_pressure, float *temperature) { *diff_pressure = *temperature = 0; }
+void DiscoveryF3::diff_pressure_update() {}
+bool DiscoveryF3::sonar_present() { return false; }
+float DiscoveryF3::sonar_read() { return 0.0f; }
+void DiscoveryF3::sonar_update() {}
 
 // RC
-void BetaFPV::rc_init(rc_type_t rc_type)
+void DiscoveryF3::rc_init(rc_type_t rc_type)
 {
   // TODO: We don't know what to do unless RC is SBUS
   rc_type = RC_TYPE_SBUS;
@@ -126,7 +126,7 @@ void BetaFPV::rc_init(rc_type_t rc_type)
   {
   default:
   case RC_TYPE_SBUS:
-    uart2_.init(&uart_config[CFG_UART2]);
+    uart2_.init(&uart_config[CFG_UART1]);
     rc_sbus_.init(&uart2_);
     rc_ = &rc_sbus_;
     break;
@@ -135,23 +135,23 @@ void BetaFPV::rc_init(rc_type_t rc_type)
   }
 }
 
-float BetaFPV::rc_read(uint8_t channel)
+float DiscoveryF3::rc_read(uint8_t channel)
 {
   return rc_->read(channel);
 }
 
-bool BetaFPV::rc_lost()
+bool DiscoveryF3::rc_lost()
 {
   return rc_->lost();
 }
 
 // PWM
-void BetaFPV::pwm_init(uint32_t refresh_rate, uint16_t idle_pwm)
+void DiscoveryF3::pwm_init(uint32_t refresh_rate, uint16_t idle_pwm)
 {
   // pwmInit(cppm, false, false, refresh_rate, idle_pwm);
 }
 
-void BetaFPV::pwm_disable()
+void DiscoveryF3::pwm_disable()
 {
   // for (int i = 0; i < PWM_NUM_OUTPUTS; i++)
   // {
@@ -159,42 +159,42 @@ void BetaFPV::pwm_disable()
   // }
 }
 
-void BetaFPV::pwm_write(uint8_t channel, float value)
+void DiscoveryF3::pwm_write(uint8_t channel, float value)
 {
   // esc_out_[channel].write(value);
 }
 
 // non-volatile memory
-void BetaFPV::memory_init()
+void DiscoveryF3::memory_init()
 {
   // initEEPROM();
 }
 
-bool BetaFPV::memory_read(void *data, size_t len)
+bool DiscoveryF3::memory_read(void *data, size_t len)
 {
   // return readEEPROM(dest, len);
   return false;
 }
 
-bool BetaFPV::memory_write(const void *data, size_t len)
+bool DiscoveryF3::memory_write(const void *data, size_t len)
 {
   // return writeEEPROM(src, len);
   return false;
 }
 
 // LED 0 is RC override status
-void BetaFPV::led0_on() {}
-void BetaFPV::led0_off() {}
-void BetaFPV::led0_toggle() {}
+void DiscoveryF3::led0_on() {}
+void DiscoveryF3::led0_off() {}
+void DiscoveryF3::led0_toggle() {}
 
 // LED 1 is arming status
-void BetaFPV::led1_on() { led_.on(); }
-void BetaFPV::led1_off() { led_.off(); }
-void BetaFPV::led1_toggle() { led_.toggle(); }
+void DiscoveryF3::led1_on() { led_.on(); }
+void DiscoveryF3::led1_off() { led_.off(); }
+void DiscoveryF3::led1_toggle() { led_.toggle(); }
 
 // Backup memory
-bool BetaFPV::has_backup_data() { return false; }
-rosflight_firmware::BackupData BetaFPV::get_backup_data() { return {}; }
+bool DiscoveryF3::has_backup_data() { return false; }
+rosflight_firmware::BackupData DiscoveryF3::get_backup_data() { return {}; }
 
 } // ns rosflight_firmware
 

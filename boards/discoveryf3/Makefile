@@ -37,7 +37,7 @@ DEBUG ?= GDB
 #################################
 
 TARGET_DIR    = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
-BOARD_DIR     = $(realpath $(TARGET_DIR)/lib/airdamon_f3/boards/betafpv)
+BOARD_DIR     = $(realpath $(TARGET_DIR)/lib/airdamon_f3/boards/discoveryf3)
 ROSFLIGHT_DIR = $(realpath $(TARGET_DIR)../..)
 TURBOMATH_DIR = $(ROSFLIGHT_DIR)/lib/turbomath
 MAVLINK_DIR   = $(ROSFLIGHT_DIR)/comms/mavlink

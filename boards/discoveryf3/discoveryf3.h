@@ -33,13 +33,19 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <betafpv.h>
+#include <discoveryf3.h>
+
+/// Gross hack to allow discovery access to extra drivers
+#include "pwm.h"
+#include "mpu6500.h"
+#include "rc_sbus.h"
+/////////////////////////////////////////////////////////
 
 #include "board.h"
 
 namespace rosflight_firmware {
 
-class BetaFPV : public Board
+class DiscoveryF3 : public Board
 {
 
 private:
@@ -55,7 +61,7 @@ private:
     airdamon::sensors::RC_SBUS rc_sbus_;
 
 public:
-  BetaFPV() = default;
+  DiscoveryF3() = default;
 
   // setup
   void init_board() override;

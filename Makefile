@@ -48,7 +48,7 @@ PARALLEL_JOBS	:= $(shell grep -c ^processor /proc/cpuinfo)
 #################################
 # List of valid boards (update with new boards)
 VALID_F1_BOARDS = NAZE
-VALID_F3_BOARDS = BETAFPV
+VALID_F3_BOARDS = DISCOVERYF3
 VALID_F4_BOARDS = REVO
 
 # Make sure that the supplied board is supported, and if so,
@@ -58,7 +58,7 @@ BOARD_DIR=boards/airbourne
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD),$(VALID_F3_BOARDS)))
-BOARD_DIR=boards/betafpv
+BOARD_DIR=boards/discoveryf3
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD),$(VALID_F1_BOARDS)))
@@ -89,7 +89,7 @@ all:
 clean:
 	cd boards/airbourne && make clean
 	cd boards/breezy && make clean
-	cd boards/betafpv && make clean
+	cd boards/discoveryf3 && make clean
 
 flash:
 	cd $(BOARD_DIR) && make -j$(PARALLEL_JOBS) -l$(PARALLEL_JOBS) DEBUG=$(DEBUG) SERIAL_DEVICE=$(SERIAL_DEVICE) flash

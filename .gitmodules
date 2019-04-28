@@ -7,6 +7,6 @@
 [submodule "boards/airbourne/airbourne"]
 	path = boards/airbourne/airbourne
 	url = https://github.com/rosflight/airbourne_f4.git
-[submodule "boards/betafpv/lib/airdamon_f3"]
-	path = boards/betafpv/lib/airdamon_f3
+[submodule "boards/discoveryf3/lib/airdamon_f3"]
+	path = boards/discoveryf3/lib/airdamon_f3
 	url = git@github.com:plusk01/airdamon_f3.git
