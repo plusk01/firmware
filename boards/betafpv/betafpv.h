@@ -57,6 +57,10 @@ private:
     // brushed pwm motors
     airdamon::PWM motors_[NUM_PWMS];
 
+    // emulated eeprom using flash
+    airdamon::Flash eeprom_;
+    bool eeprom_initialized_ = false; // because param_t is private
+
 public:
   BetaFPV() = default;
 

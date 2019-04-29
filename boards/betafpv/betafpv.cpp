@@ -159,6 +159,7 @@ void BetaFPV::pwm_disable()
 {
   for (uint8_t i=0; i<NUM_PWMS; ++i)
   {
+    motors_[i].write(0.0f);
     // motors_[i].disable();
   }
 }
@@ -191,21 +192,26 @@ void BetaFPV::pwm_write(uint8_t channel, float value)
 }
 
 // non-volatile memory
-void BetaFPV::memory_init()
-{
-  // initEEPROM();
-}
+void BetaFPV::memory_init() {}
 
 bool BetaFPV::memory_read(void *data, size_t len)
 {
-  // return readEEPROM(dest, len);
-  return false;
+  if (!eeprom_initialized_) {
+    eeprom_.init(len);
+    eeprom_initialized_ = true;
+  }
+
+  return eeprom_.read(data, len);
 }
 
 bool BetaFPV::memory_write(const void *data, size_t len)
 {
-  // return writeEEPROM(src, len);
-  return false;
+  if (!eeprom_initialized_) {
+    eeprom_.init(len);
+    eeprom_initialized_ = true;
+  }
+
+  return eeprom_.write(data, len);
 }
 
 // LED 0 is RC override status
