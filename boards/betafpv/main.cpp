@@ -29,13 +29,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "betafpv.h"
+#include "betafpv_board.h"
 #include "rosflight.h"
 #include "mavlink.h"
 
 int main(void)
 {
-  rosflight_firmware::BetaFPV board;
+  rosflight_firmware::BetaFPVBoard board;
   rosflight_firmware::Mavlink mavlink(board);
   rosflight_firmware::ROSflight firmware(board, mavlink);
 
@@ -44,8 +44,6 @@ int main(void)
 
   while (true)
   {
-    // delay(100);
-    // board.led1_toggle();
     firmware.run();
   }
   return 0;

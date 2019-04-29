@@ -29,6 +29,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef ROSFLIGHT_FIRMWARE_BETAFPV_BOARD_H
+#define ROSFLIGHT_FIRMWARE_BETAFPV_BOARD_H
+
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -39,7 +42,7 @@
 
 namespace rosflight_firmware {
 
-class BetaFPV : public Board
+class BetaFPVBoard : public Board
 {
 
 private:
@@ -62,7 +65,7 @@ private:
     bool eeprom_initialized_ = false; // because param_t is private
 
 public:
-  BetaFPV() = default;
+  BetaFPVBoard() = default;
 
   // setup
   void init_board() override;
@@ -134,3 +137,5 @@ public:
 };
 
 } // ns rosflight_firmware
+
+#endif // ROSFLIGHT_FIRMWARE_BETAFPV_BOARD_H

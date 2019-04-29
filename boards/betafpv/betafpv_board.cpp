@@ -29,14 +29,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// #pragma GCC diagnostic push
-// #pragma GCC diagnostic ignored "-Wold-style-cast"
-
-#include "betafpv.h"
+#include "betafpv_board.h"
 
 namespace rosflight_firmware {
 
-void BetaFPV::init_board()
+void BetaFPVBoard::init_board()
 {
   board_init();
 
@@ -46,7 +43,7 @@ void BetaFPV::init_board()
   cs_.init(GPIOB, GPIO_Pin_9, GPIO::OUTPUT);
 }
 
-void BetaFPV::board_reset(bool bootloader)
+void BetaFPVBoard::board_reset(bool bootloader)
 {
   // systemReset(bootloader);
   // ()bootloader;
@@ -54,36 +51,36 @@ void BetaFPV::board_reset(bool bootloader)
 }
 
 // clock
-uint32_t BetaFPV::clock_millis() { return millis(); }
-uint64_t BetaFPV::clock_micros() { return micros(); }
-void BetaFPV::clock_delay(uint32_t milliseconds) { delay(milliseconds); }
+uint32_t BetaFPVBoard::clock_millis() { return millis(); }
+uint64_t BetaFPVBoard::clock_micros() { return micros(); }
+void BetaFPVBoard::clock_delay(uint32_t milliseconds) { delay(milliseconds); }
 
 // serial
-void BetaFPV::serial_init(uint32_t baud_rate, uint32_t dev) { vcp_.init(); }
-void BetaFPV::serial_write(const uint8_t *src, size_t len) { vcp_.write(src, len); }
-uint16_t BetaFPV::serial_bytes_available() { return vcp_.rx_bytes_waiting(); }
-uint8_t BetaFPV::serial_read() { return vcp_.read_byte(); }
-void BetaFPV::serial_flush() { /*vcp_.flush();*/ }
+void BetaFPVBoard::serial_init(uint32_t baud_rate, uint32_t dev) { vcp_.init(); }
+void BetaFPVBoard::serial_write(const uint8_t *src, size_t len) { vcp_.write(src, len); }
+uint16_t BetaFPVBoard::serial_bytes_available() { return vcp_.rx_bytes_waiting(); }
+uint8_t BetaFPVBoard::serial_read() { return vcp_.read_byte(); }
+void BetaFPVBoard::serial_flush() { /*vcp_.flush();*/ }
 
 // sensors
-void BetaFPV::sensors_init()
+void BetaFPVBoard::sensors_init()
 {
   while(millis() < 50); // wait for sensors to boot up
   imu_.init(&spi1_, &cs_);
 }
 
-uint16_t BetaFPV::num_sensor_errors()
+uint16_t BetaFPVBoard::num_sensor_errors()
 {
   // return i2cGetErrorCounter();
   return 0;
 }
 
-bool BetaFPV::new_imu_data()
+bool BetaFPVBoard::new_imu_data()
 {
   return imu_.has_new_data();
 }
 
-bool BetaFPV::imu_read(float accel[3], float *temperature, float gyro[3], uint64_t *time_us)
+bool BetaFPVBoard::imu_read(float accel[3], float *temperature, float gyro[3], uint64_t *time_us)
 {
   float read_accel[3], read_gyro[3];
   imu_.read(read_accel, read_gyro, temperature, time_us);
@@ -100,24 +97,24 @@ bool BetaFPV::imu_read(float accel[3], float *temperature, float gyro[3], uint64
   return true;
 }
 
-void BetaFPV::imu_not_responding_error() { sensors_init(); }
+void BetaFPVBoard::imu_not_responding_error() { sensors_init(); }
 
 // unused sensors
-bool BetaFPV::mag_present() { return false; }
-void BetaFPV::mag_update() {}
-void BetaFPV::mag_read(float mag[3]) { mag[0] = mag[1] = mag[2] = 0; }
-bool BetaFPV::baro_present() { return false; }
-void BetaFPV::baro_read(float *pressure, float *temperature) { *pressure = *temperature = 0; }
-void BetaFPV::baro_update() {}
-bool BetaFPV::diff_pressure_present() { return false; }
-void BetaFPV::diff_pressure_read(float *diff_pressure, float *temperature) { *diff_pressure = *temperature = 0; }
-void BetaFPV::diff_pressure_update() {}
-bool BetaFPV::sonar_present() { return false; }
-float BetaFPV::sonar_read() { return 0.0f; }
-void BetaFPV::sonar_update() {}
+bool BetaFPVBoard::mag_present() { return false; }
+void BetaFPVBoard::mag_update() {}
+void BetaFPVBoard::mag_read(float mag[3]) { mag[0] = mag[1] = mag[2] = 0; }
+bool BetaFPVBoard::baro_present() { return false; }
+void BetaFPVBoard::baro_read(float *pressure, float *temperature) { *pressure = *temperature = 0; }
+void BetaFPVBoard::baro_update() {}
+bool BetaFPVBoard::diff_pressure_present() { return false; }
+void BetaFPVBoard::diff_pressure_read(float *diff_pressure, float *temperature) { *diff_pressure = *temperature = 0; }
+void BetaFPVBoard::diff_pressure_update() {}
+bool BetaFPVBoard::sonar_present() { return false; }
+float BetaFPVBoard::sonar_read() { return 0.0f; }
+void BetaFPVBoard::sonar_update() {}
 
 // RC
-void BetaFPV::rc_init(rc_type_t rc_type)
+void BetaFPVBoard::rc_init(rc_type_t rc_type)
 {
   // TODO: We don't know what to do unless RC is SBUS
   rc_type = RC_TYPE_SBUS;
@@ -135,18 +132,18 @@ void BetaFPV::rc_init(rc_type_t rc_type)
   }
 }
 
-float BetaFPV::rc_read(uint8_t channel)
+float BetaFPVBoard::rc_read(uint8_t channel)
 {
   return rc_->read(channel);
 }
 
-bool BetaFPV::rc_lost()
+bool BetaFPVBoard::rc_lost()
 {
   return rc_->lost();
 }
 
 // PWM
-void BetaFPV::pwm_init(uint32_t refresh_rate, uint16_t idle_pwm)
+void BetaFPVBoard::pwm_init(uint32_t refresh_rate, uint16_t idle_pwm)
 {
   for (uint8_t i=0; i<NUM_PWMS; ++i)
   {
@@ -155,7 +152,7 @@ void BetaFPV::pwm_init(uint32_t refresh_rate, uint16_t idle_pwm)
   }
 }
 
-void BetaFPV::pwm_disable()
+void BetaFPVBoard::pwm_disable()
 {
   for (uint8_t i=0; i<NUM_PWMS; ++i)
   {
@@ -164,7 +161,7 @@ void BetaFPV::pwm_disable()
   }
 }
 
-void BetaFPV::pwm_write(uint8_t channel, float value)
+void BetaFPVBoard::pwm_write(uint8_t channel, float value)
 {
   uint8_t ch = channel;
 
@@ -192,9 +189,9 @@ void BetaFPV::pwm_write(uint8_t channel, float value)
 }
 
 // non-volatile memory
-void BetaFPV::memory_init() {}
+void BetaFPVBoard::memory_init() {}
 
-bool BetaFPV::memory_read(void *data, size_t len)
+bool BetaFPVBoard::memory_read(void *data, size_t len)
 {
   if (!eeprom_initialized_) {
     eeprom_.init(len);
@@ -204,7 +201,7 @@ bool BetaFPV::memory_read(void *data, size_t len)
   return eeprom_.read(data, len);
 }
 
-bool BetaFPV::memory_write(const void *data, size_t len)
+bool BetaFPVBoard::memory_write(const void *data, size_t len)
 {
   if (!eeprom_initialized_) {
     eeprom_.init(len);
@@ -215,19 +212,17 @@ bool BetaFPV::memory_write(const void *data, size_t len)
 }
 
 // LED 0 is RC override status
-void BetaFPV::led0_on() {}
-void BetaFPV::led0_off() {}
-void BetaFPV::led0_toggle() {}
+void BetaFPVBoard::led0_on() {}
+void BetaFPVBoard::led0_off() {}
+void BetaFPVBoard::led0_toggle() {}
 
 // LED 1 is arming status
-void BetaFPV::led1_on() { led_.on(); }
-void BetaFPV::led1_off() { led_.off(); }
-void BetaFPV::led1_toggle() { led_.toggle(); }
+void BetaFPVBoard::led1_on() { led_.on(); }
+void BetaFPVBoard::led1_off() { led_.off(); }
+void BetaFPVBoard::led1_toggle() { led_.toggle(); }
 
 // Backup memory
-bool BetaFPV::has_backup_data() { return false; }
-rosflight_firmware::BackupData BetaFPV::get_backup_data() { return {}; }
+bool BetaFPVBoard::has_backup_data() { return false; }
+rosflight_firmware::BackupData BetaFPVBoard::get_backup_data() { return {}; }
 
 } // ns rosflight_firmware
-
-// #pragma GCC diagnostic pop
